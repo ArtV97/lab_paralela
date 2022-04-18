@@ -1,0 +1,13 @@
+1) Veja o arquivo main.c
+2) O programa foi testado variando o número de processadores, mais detalhes em "3".
+3) Um fator que é importande destacar, a respeito de errors obtidos, é que a atividade solicita terminar o programa caso o número de processos seja ímpar.
+Sendo assim, devemos chamar o MPI_Finalize ao invés de simplesmente retornar, caso contrário temos uma "saída imprópria"(exiting improperly), causada por:
+
+    2. this process called "init", but exited without calling "finalize".
+    By rule, all processes that call "init" MUST call "finalize" prior to
+    exiting or it will be considered an "abnormal termination"
+
+Com relação ao número de processadores, verificou-se que ao solicitar mais processadores que o disponível (6 cores na máquina utilizada), o mpi exibe a seguinte mensagem:
+"There are not enough slots available in the system to satisfy the <número de processadores solicitados> slots that were requested by the application: <nome do executavel>"
+Dessa forma, para executar devemos diminuir a quantidade de processadores requisitados ou utilizar o parâmetro --oversubscribe.
+
