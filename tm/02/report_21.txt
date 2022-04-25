@@ -1,0 +1,4 @@
+1) Ele compara o tempo de envio de mensagens broadcast utilizando MPI_Bcast com um brodcast implementado utilizando o MPI_SEND.
+
+
+2) A complexidade do broadcast implementado utilizando o MPI_SEND é O(n), já a complexidade do broadcast usando MPI_Bcast é O(log(n)). Porém, para valores pequenos de num_elements, ou seja, uma quantidade de dados pequena, a diferença de tempo é mínima, isso ocorre porque para tal quantidade de dados a otimização de envio feita pelo MPI_Bcast não é perceptível. Vale também ressaltar que o próprio overhead de preparação do MPI_Bcast por vezes pode tornar o uso do broadcast usando o MPI_SEND mais viável, casa hajam poucos processos e a quantidade de dados a ser enviado seja pequena. O num_trials permite ter uma maior precisão na medição do tempo, dado que o tempo exibido é a média do tempo de execução dessas tentativas.

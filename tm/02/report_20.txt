@@ -1,0 +1,24 @@
+a) Por que a utilização de barreiras? 
+    R: As barreiras são utilizadas para sincronizar os processos. No programa em questão existe
+    uma comunicação entre o processo 0 (Send) e o processo 1 (Receive), e neste caso o MPI_Barrier
+    é usado para sincronizar o MPI_Send, do processo 0, com o MPI_Recv, do processo 1.
+
+
+b) Analise o tempo (coletar o tempo de cada uma das versões). Comente os resultados.
+    Há diferença nos resultados e no tempo?
+    Por que?
+
+VERSÃO 1) versão original
+    Time elapsed to complete blocking send 1 :  0.000015 sec
+    Time elapsed to complete blocking send 2 :  10.000193 sec
+
+VERSÃO 2) tire  a primeira barreira
+    Time elapsed to complete blocking send 1 :  0.000031 sec
+    Time elapsed to complete blocking send 2 :  10.000186 sec
+
+VERSÃO 3)  tire as duas barreiras
+    Time elapsed to complete blocking send 1 :  0.000051 sec
+    Time elapsed to complete blocking send 2 :  19.999427 sec
+
+R: As versões 1 e 2 possuem tempos de execução aproximadamente iguais, já a versão 3 possui um tempo de
+execução bem maior. Isso ocorre pois, a comunicação é bloqueante, fazendo com que
