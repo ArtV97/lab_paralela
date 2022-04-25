@@ -1,7 +1,9 @@
 a) Por que a utilização de barreiras? 
     R: As barreiras são utilizadas para sincronizar os processos. No programa em questão existe
     uma comunicação entre o processo 0 (Send) e o processo 1 (Receive), e neste caso o MPI_Barrier
-    é usado para sincronizar o MPI_Send, do processo 0, com o MPI_Recv, do processo 1.
+    é usado para sincronizar o MPI_Send, do processo 0, com o MPI_Recv, do processo 1. Isso garante
+    que o envio só será realizado quando o receptor estiver pronto e vice-versa.
+
 
 
 b) Analise o tempo (coletar o tempo de cada uma das versões). Comente os resultados.
@@ -9,16 +11,25 @@ b) Analise o tempo (coletar o tempo de cada uma das versões). Comente os result
     Por que?
 
 VERSÃO 1) versão original
-    Time elapsed to complete blocking send 1 :  0.000015 sec
-    Time elapsed to complete blocking send 2 :  10.000193 sec
+    Time elapsed to complete blocking send 1 :  0.000002 sec
+    Just received buffer 1
+    Time elapsed to complete blocking send 2 :  10.000178 sec
+    Just received buffer 2
 
-VERSÃO 2) tire  a primeira barreira
-    Time elapsed to complete blocking send 1 :  0.000031 sec
-    Time elapsed to complete blocking send 2 :  10.000186 sec
+VERSÃO 2) tire a primeira barreira
+    Time elapsed to complete blocking send 1 :  0.000012 sec
+    Just received buffer 1
+    Time elapsed to complete blocking send 2 :  10.000158 sec
+    Just received buffer 2
 
-VERSÃO 3)  tire as duas barreiras
-    Time elapsed to complete blocking send 1 :  0.000051 sec
-    Time elapsed to complete blocking send 2 :  19.999427 sec
+VERSÃO 3) tire as duas barreiras
+    Time elapsed to complete blocking send 1 :  0.000011 sec
+    Just received buffer 1
+    Just received buffer 2
+    Time elapsed to complete blocking send 2 :  20.000029 sec
 
-R: As versões 1 e 2 possuem tempos de execução aproximadamente iguais, já a versão 3 possui um tempo de
-execução bem maior. Isso ocorre pois, a comunicação é bloqueante, fazendo com que
+R: As versões 1 e 2 possuem tempos de aproximadamente iguais, pois o primeiro envio corresponde
+a uma quantidade pequena de dados, o que o torna basicamente não bloqueante. Já a versão 3 possui um tempo
+de execução bem maior, isso ocorre pois, o segundo envio corresponde a uma quantidade de dados bem maior,
+o que faz com que a conexão seja de fato bloqueante, e como não temos mais a sincronização antes da chamda
+ao MPI_Wtime, contabiliza-se um tempo maior.
