@@ -3,7 +3,7 @@
 
 int main( int argc, char **argv ){
     int rank; // process rank "my rank"
-    int size; // number of process
+    int size; // number of processes
     int target; // target of the comunication, MPI_Send destination and MPI_Recv source
     int value; // variable to store MPI_Recv content
     MPI_Status status;
