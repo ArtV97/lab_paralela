@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
         if (filename) {
             fin = fopen(filename, "r");
             if (!fin) {
-                fprintf(stderr, "Error: Couldn't open file %s.\n", filename);
+                perror("Error");
                 MPI_Abort(MPI_COMM_WORLD, FOPEN_ERROR);
             }
 
