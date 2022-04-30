@@ -5,23 +5,31 @@
 #include "mpi.h"
 
 
-#define ARGS_ERROR -3
-#define FOPEN_ERROR -2
-#define N_ERROR -1
+#define ARGS_ERROR -4
+#define FOPEN_ERROR -3
+#define N_ERROR -2
+#define FILE_PARSE_ERROR -1
 #define SUCCESS 1
 
 
-void read_from_f(char *filename, int *x, int *N) {
-    return;
-}
-
 void help() {
-    printf("### Possible Arguments ###\n");
-    printf("\t-n <N>: size of the set S # this argument is obrigatory\n");
-    printf("\t-f <filename>: file that contains X and set S\n");
-    printf("\t-x <X>: value(int) to be searched in set S\n");
+    fprintf(stderr, "### Possible Arguments ###\n");
+    fprintf(stderr, "-f <filename>: file that contains X, N and the set S.\n");
+    fprintf(stderr, "-n <N>: size of the set S.\n");
+    fprintf(stderr, "-x <X>: value(int) to be searched in set S. # default value = 0\n\n");
+    fprintf(stderr, "Examples:\n");
+    fprintf(stderr, "\t1) mpiexec -n 4 executable -f fin.txt\n");
+    fprintf(stderr, "\t2) mpiexec -n 4 executable -n 30\n");
+    fprintf(stderr, "\t3) mpiexec -n 4 executable -x 93 -n 30\n\n");
+    fprintf(stderr, "Abort Codes:\n");
+    fprintf(stderr, "\t1: Success\n");
+    fprintf(stderr, "\t-1: File parse error, first line of the file should be: <x> <N>\n");
+    fprintf(stderr, "\t-2: Expect number of items in S is different from N.\n");
+    fprintf(stderr, "\t-3: File Open Error.\n");
+    fprintf(stderr, "\t-4: Arguments error.\n");
     MPI_Abort(MPI_COMM_WORLD, ARGS_ERROR);
 }
+
 
 int main(int argc, char **argv) {
     int rank, size;
@@ -32,6 +40,8 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    int i; // used to iterate over arrays
+
     if (rank == 0) {
         ////////////////////////////////////
         // Parse arguments
@@ -40,11 +50,11 @@ int main(int argc, char **argv) {
         int x = 0;
         int N = 0;
         char *filename = NULL;
-        FILE *fin;
+        FILE *fin = NULL;
         int LINE_BUFFER = 64;
         char line[LINE_BUFFER+1];
         
-        int i = 1;
+        i = 1;
         while (i+1 < argc) {
             if (strcmp(argv[i], "-f") == 0) {
                 filename = argv[++i];
@@ -59,10 +69,12 @@ int main(int argc, char **argv) {
             i++;
         }
 
-        if (N == 0) help(); // must have argument N
-        else if (!filename && x == 0) help(); // must have filename or x
-        else if (filename && x != 0) help(); // can't have filename and x
+        // must have filename or x and N
+        if (!filename && (N == 0)) help();
+        else if (filename && (x != 0 || N != 0)) help();
 
+
+        // Get x and N from file
         if (filename) {
             fin = fopen(filename, "r");
             if (!fin) {
@@ -72,24 +84,39 @@ int main(int argc, char **argv) {
 
             // first line is x
             fgets(line, LINE_BUFFER, fin);
-            x = atoi(line);
+            
+            char *tok = strtok(line, " ");
+            if (!tok) {
+                fprintf(stderr, "Error: First line of file must be: <x> <N>\n");
+                MPI_Abort(MPI_COMM_WORLD, FILE_PARSE_ERROR);
+            }
+            x = atoi(tok);
+
+            tok = strtok(NULL, " ");
+            if (!tok) {
+                fprintf(stderr, "Error: First line of file must be: <x> <N>\n");
+                MPI_Abort(MPI_COMM_WORLD, FILE_PARSE_ERROR);
+            }
+            N = atoi(tok);
         }
 
         /////////////////////
         // Broadcast x and N
         /////////////////////
+        printf("### Preparing Search...\nx = %d, N = %d\n", x, N);
 
         int input[] = {x, N};
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);  // sync 1
         MPI_Bcast(input, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
 
-        ///////////////////////////////
-        // Read or Generate S then Send
-        ///////////////////////////////
+        /////////////////////
+        // Read or Generate S
+        /////////////////////
 
         int S[N]; // set
         if (fin) { // read S from file
+            printf("Reading S from %s\n", filename);
             i = 0;
             int n;
             while (fgets(line, LINE_BUFFER, fin)) {
@@ -112,29 +139,37 @@ int main(int argc, char **argv) {
             }
         }
         else { // generate random S
+            printf("Generating random S\n");
             srand(time(NULL));
             
-            for (int i = 0; i < N; i++) {
-                S[i] = rand();
+            for (i = 0; i < N; i++) {
+                S[i] = rand() % 1000;
             }
         }
 
-        fprintf(stderr, "S: ");
-        for (int i = 0; i < N; i++) {
-            fprintf(stderr, "%d ", S[i]);
+        printf("S: ");
+        for (i = 0; i < N; i++) {
+            printf("%d ", S[i]);
         }
-        fprintf(stderr, "\n");
-        
+        printf("\n\n");
+
+
+        ////////////////////
+        // Sending the set S
+        ////////////////////
+
+        printf("### Running Search...\n");
         int rest = N % (size-1);
         int subset_size = N/(size-1); // number of elements for each process
 
-        MPI_Barrier(MPI_COMM_WORLD);
-        for (int i = 0; i < size-1; i++) {
-            if (i != size -1) {
-                MPI_Send(S+(subset_size*i), subset_size, MPI_INT, i+1, 0, MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);  // sync 2
+        for (i = 0; i < size-1; i++) {
+            int dst_rank = i+1;
+            if (dst_rank != size -1) {
+                MPI_Send(S+(subset_size*i), subset_size, MPI_INT, dst_rank, 0, MPI_COMM_WORLD);
             }
             else { // last process will get the "rest" if any
-                MPI_Send(S+(subset_size*i), subset_size + rest, MPI_INT, i+1, 0, MPI_COMM_WORLD);
+                MPI_Send(S+(subset_size*i), subset_size + rest, MPI_INT, dst_rank, 0, MPI_COMM_WORLD);
             }
         }
 
@@ -143,16 +178,17 @@ int main(int argc, char **argv) {
         // Waiting for the result
         /////////////////////////
 
+        MPI_Barrier(MPI_COMM_WORLD);  // sync 3
         int result;
-        for (int i = 0; i < size-1; i++) {
+        for (i = 0; i < size-1; i++) {
             MPI_Recv(&result, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
             if (status.MPI_TAG) { // found x in set S
                 result = result + (subset_size*status.MPI_SOURCE);
-                printf("%d found by process %d in position %d\n", x, status.MPI_SOURCE, result);
+                printf("-> %d found by process %d in position %d\n", x, status.MPI_SOURCE, result);
                 MPI_Abort(MPI_COMM_WORLD, SUCCESS);
             }
         }
-        printf("%d was not found in set S.\n", x);
+        printf("-> %d was not found in set S.\n", x);
     }
     else {
         ////////////////////
@@ -163,7 +199,7 @@ int main(int argc, char **argv) {
         int x;
         int N;
 
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD); // sync 1
         MPI_Bcast(input, 2, MPI_INT, 0, MPI_COMM_WORLD);
         
         x = input[0];
@@ -181,19 +217,22 @@ int main(int argc, char **argv) {
         }
 
         int Si[subset_size];
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);  // sync 2
         MPI_Recv(Si, subset_size, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-        fprintf(stderr, "Process %d Si: ", rank);
-        for (int i = 0; i < subset_size; i++) {
-            fprintf(stderr, "%d ", Si[i]);
+        printf("Process %d subset: ", rank);
+        for (i = 0; i < subset_size; i++) {
+            printf("%d ", Si[i]);
         }
-        fprintf(stderr, "\n");
+        printf("\n");
+
+        
         ///////////////////////////
         // Searching x in subset Si    
         ///////////////////////////
         
-        for (int i = 0; i < subset_size; i++) {
+        MPI_Barrier(MPI_COMM_WORLD);  // sync 3
+        for (i = 0; i < subset_size; i++) {
             if (Si[i] == x) {
                 MPI_Send(&i, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
                 MPI_Finalize();
