@@ -79,3 +79,16 @@ int MPI_Allreduce(const void *sendbuf, void *recvbuf,int count, MPI_Datatype dat
 4) datatype: tipo de dados do buffer (como já visto)
 5) op: a operação de redução
 6) comm: Communicator (como já visto)
+
+### MPI_Scatter
+``` C
+int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+```
+1) sendbuf: endereço do buffer de envio
+2) sendcount: é o número de elementos que o “root” enviará para cada um dos outros processos
+3) sendtype: tipo de dados do buffer (como já visto)
+4) recvbuf: endereço do buffer de recebimento
+5) recvcount: é o número de elementos que cada processo destino receberá
+6) recvtype: tipo de dados do buffer (como já visto)
+7) rank: rank do processo de envio
+8) comm: Communicator (como já visto)
