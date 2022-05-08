@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
         for (i = 0; i < size-1; i++) {
             MPI_Recv(&result, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
             if (status.MPI_TAG) { // found x in set S
-                result = result + (subset_size*status.MPI_SOURCE);
+                result = result + (subset_size*(status.MPI_SOURCE-1));
                 printf("-> %d found by process %d in position %d\n", x, status.MPI_SOURCE, result);
                 MPI_Abort(MPI_COMM_WORLD, SUCCESS);
             }

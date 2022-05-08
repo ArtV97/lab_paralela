@@ -1,3 +1,27 @@
-1) Implemente uma versão distribuída utilizando a biblioteca MPI, com send e receives
-2) Implemente uma outra versão com MPI_Scatter (dispersão)
-3) Compare o tempo de execução e aponte as vantagens e desvantagens
+# Compare o tempo de execução e aponte as vantagens e desvantagens
+
+
+
+Teste 1: |S| = 15, x ∊ S
+scatter     | 0m0.357s
+no_scatter  | 0m0.242s
+
+Teste 2: |S| = 1000, x ∊ S
+scatter     | 0m0.241s
+no_scatter  | 0m0.241s
+
+Teste 3: |S| = 1000, x !∊ S
+scatter     | 0m0.241s
+no_scatter  | 0m0.241s
+
+
+# Vantagens do MPI_Scatter
+1) Não é necessário gerenciar o ponteiro do array para dividir o dado entre os processos. Basta calcular a quantidade a ser enviada.
+2) É feita apenas uma chamada ao MPI_Scatter, diferentemente da implementação com MPI_Send e MPI_Recv, na qual deve-se fazer um loop para 
+garantir que todos os processos recebam os dados.
+3) O processo que realiza o envio também "recebe" parte dos dados.
+
+# Desvantagens do MPI_Scatter
+1) Caso não seja possível dividir o dado igualmente entre os processos, o programador deve escolher entre:
+    1.1) Não enviar o excesso do dado. (resto da divisão entre a quantidade de elementos e a quantidade de processos)
+    1.2) Adicionar elementos nulos ao array para que o número de elementos seja múltiplo do número de processos, possibilitando assim, a divisão exata.
