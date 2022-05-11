@@ -1,0 +1,20 @@
+BUFFER SIZE = 100
+Blocking:       11.000221 sec
+nonBlocking:     8.000195 seconds
+__________________________________________
+BUFFER SIZE = 1000
+Blocking:       11.000271 sec
+nonBlocking:     8.000250 seconds
+__________________________________________
+BUFFER SIZE = 10000
+Blocking:       11.000260 sec
+nonBlocking:     8.000247 seconds
+__________________________________________
+BUFFER SIZE = 100000
+Blocking:       11.000567 sec
+nonBlocking:     8.000368 seconds
+__________________________________________
+BUFFER SIZE = 1000000
+Blocking:       11.003634 sec
+nonBlocking:     8.001416 seconds
+__________________________________________

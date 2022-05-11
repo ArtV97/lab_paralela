@@ -7,3 +7,35 @@ porque para tal quantidade de dados a otimização de envio feita pelo MPI_Bcast
 overhead de preparação do MPI_Bcast por vezes pode tornar o uso do broadcast usando o MPI_SEND mais viável, casa hajam poucos processos
 e a quantidade de dados a ser enviado seja pequena. O num_trials permite ter uma maior precisão na medição do tempo, dado que o tempo exibido
 é o tempo média de execução dessas num_trials execuções.
+
+
+
+$ mpiexec -n 2 bin 10 10
+Data size = 40, Trials = 10
+Avg my_bcast time = 0.000001
+Avg MPI_Bcast time = 0.000002
+____________________________________________
+$ mpiexec -n 6 bin 10 10
+Data size = 40, Trials = 10
+Avg my_bcast time = 0.000004
+Avg MPI_Bcast time = 0.000004
+____________________________________________
+$ mpiexec -n 2 bin 10000 10
+Data size = 40000, Trials = 10
+Avg my_bcast time = 0.000005
+Avg MPI_Bcast time = 0.000013
+____________________________________________
+$ mpiexec -n 6 bin 10000 10
+Data size = 40000, Trials = 10
+Avg my_bcast time = 0.000032
+Avg MPI_Bcast time = 0.000042
+____________________________________________
+$ mpiexec -n 2 bin 100000000 10
+Data size = 400000000, Trials = 10
+Avg my_bcast time = 0.060676
+Avg MPI_Bcast time = 0.058000
+____________________________________________
+$ mpiexec -n 6 bin 100000000 10
+Data size = 400000000, Trials = 10
+Avg my_bcast time = 0.344201
+Avg MPI_Bcast time = 0.192788
