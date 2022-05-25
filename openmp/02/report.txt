@@ -1,0 +1,33 @@
+Compare todas as versões. Qual  tem melhor desempenho?
+-> A versão que obteve o melhor desempenho foi a sequencial, provavelmente devido ao problema conhecido como False Sharing. O False Sharing é um fenômeno que ocorre quando
+a utilização de vários processadores acaba invalidando a linha da cache, fazendo com que outros processadores acessando um elemento diferente na mesma linha vejam a linha
+marcada como inválida e sejam forçados a buscar uma cópia mais recente da linha na memória ou de outro lugar, mesmo que o elemento acessado não tenha sido modificado.
+Como resultado, haverá um aumento no tráfego de interconexão e sobrecarga. Além disso, enquanto a atualização da linha de cache está em andamento, o acesso os elementos na
+linha é inibido.
+
+
+Analise o desempenho do seu programa paralelo.
+-> A princípio espera-se que o desempenho dos dois programas paralelos fosse semelhante, uma vez que a implementação 2 (que não utilizada o omp parallel for) é basicamente
+o que é feito pelo "omp parallel for". Porém, os resultados dos programas paralelos variavam bastante a cada execução, mas de maneira geral o quanto maior o número de threads,
+pior o desempenho, o que fortalece a hipótese utilizada para justificar o melhor desempenho do programa sequencial.
+
+
+### Teste realizado ###
+- Os tamanhos do array usados nos testes foramcom 1024, 100000 e 500000.
+- O número de threads usados dos programas paralelos foram 2, 4 e 6.
+- Apenas o tempo de cálculo do produto escalar foi medido.
+
+Teste I (Array size = 1024)
+Programa|    seq    |    omp_parallel_x2    |    omp_parallel_for_x2    |    omp_parallel_x4    |    omp_parallel_for_x4    |    omp_parallel_x6    |    omp_parallel_for_x6    |
+time(s) |  0.000003 |       0.000072        |         0.000065          |       0.000135        |         0.000123          |       0.000194        |         0.000185          |
+
+
+Teste II (Array size = 100000)
+Programa|    seq    |    omp_parallel_x2    |    omp_parallel_for_x2    |    omp_parallel_x4    |    omp_parallel_for_x4    |    omp_parallel_x6    |    omp_parallel_for_x6    |
+time(s) |  0.000277 |       0.001490        |         0.001313          |       0.001630        |         0.001435          |       0.001722        |         0.001633          |
+
+
+
+Teste III (Array size = 500000)
+Programa|    seq    |    omp_parallel_x2    |    omp_parallel_for_x2    |    omp_parallel_x4    |    omp_parallel_for_x4    |    omp_parallel_x6    |    omp_parallel_for_x6    |
+time(s) |  0.001368 |       0.011201        |         0.006541          |       0.025321        |         0.006637          |       0.038444        |         0.050047          |

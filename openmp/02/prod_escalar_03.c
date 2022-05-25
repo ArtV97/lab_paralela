@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <omp.h>
+#include <time.h>
 
 int main(int argc, char **argv)
 {
@@ -20,12 +21,16 @@ int main(int argc, char **argv)
     sum = 0;
 
     omp_set_num_threads(num_threads);
+    clock_t initial = clock();
     # pragma omp parallel for
         for(int i = 0; i < n; i++) {
             # pragma omp atomic
             sum = sum + a[i]*b[i];
         }
-    printf ("sum = %f\n", sum);
+    clock_t final = clock();
+    double result = ((double)(final-initial)/CLOCKS_PER_SEC);
+    printf("sum = %f\n", sum);
+    printf("Calculation Execution Time: %lf\n", result);
 
     return 0;
 }

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 int main(int argc, char **argv)
 {
@@ -17,10 +18,14 @@ int main(int argc, char **argv)
     }
     sum = 0;
 
+    clock_t initial = clock();
     for (i=1; i<n; i++){
         sum = sum + a[i]*b[i];
     }
+    clock_t final = clock();
+    double result = ((double)(final-initial)/CLOCKS_PER_SEC);
     printf ("sum = %f\n", sum);
+    printf("Calculation Execution Time: %lf\n", result);
 
     return 0;
 }
