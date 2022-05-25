@@ -8,7 +8,7 @@ linha é inibido.
 O False Sharing irá prejudicar a performance do programa paralelo quando os 3 fatores abaixo ocorrerem ao mesmo tempo:
 1) Os dados compartilhados são modificados por vários processadores.
 2) Vários processadores atualizam dados na mesma linha de cache.
-3) 
+3) Essa atualização ocorre com muita frequência (por exemplo, em um loop apertado).
 
 
 Analise o desempenho do seu programa paralelo.
