@@ -5,6 +5,11 @@ marcada como inválida e sejam forçados a buscar uma cópia mais recente da lin
 Como resultado, haverá um aumento no tráfego de interconexão e sobrecarga. Além disso, enquanto a atualização da linha de cache está em andamento, o acesso os elementos na
 linha é inibido.
 
+O False Sharing irá prejudicar a performance do programa paralelo quando os 3 fatores abaixo ocorrerem ao mesmo tempo:
+1) Os dados compartilhados são modificados por vários processadores.
+2) Vários processadores atualizam dados na mesma linha de cache.
+3) 
+
 
 Analise o desempenho do seu programa paralelo.
 -> A princípio espera-se que o desempenho dos dois programas paralelos fosse semelhante, uma vez que a implementação 2 (que não utilizada o omp parallel for) é basicamente
