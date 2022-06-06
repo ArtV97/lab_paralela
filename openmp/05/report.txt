@@ -1,0 +1,25 @@
+## Analise o desempenho do seu programa e a vantagem do paralelismo
+-> A vantagem do programa se dá justamente por conta da divisão da busca nas threads, onde cada thread fará uma busca em parte do
+conjunto pela qual ficou responsável. Abaixo temos um comparativo entre uma versão sequencial e uma paralela, no teste utilizado
+|S| = 10000000 e X não pertencia ao conjunto S, o que faz com que fosse necessária uma busca em todo o conjunto.
+
+sequencial
+Calculation Execution Time: 0.019209
+
+paralelo (12 threads)
+Calculation Execution Time: 0.002400
+
+## Compare os tempos com a sua versão MPI
+-> Utilizando o comando time para medir o tempo, temos o resultado abaixo. Nele vemos que o programa openMP performou muito melhor, isso se deve ao fato
+do problema em questão ser propício a ser solucionado utilizando memória compartilhada. O MPI_Scatter, utilizado na solução MPI, faz nada mais do que dividir
+o conjunto S entre os processos, porém inserindo um overhead de comunicação, algo que não ocorre na solução utilizando openMP.
+
+MPI
+real    0m0.950s
+user    0m2.025s
+sys     0m5.276s
+
+openMP
+real    0m0.360s
+user    0m0.358s
+sys     0m0.008s

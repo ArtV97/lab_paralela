@@ -157,11 +157,11 @@ int main(int argc, char **argv) {
             }
         }
 
-        printf("S: ");
-        for (i = 0; i < N; i++) {
-            printf("%d ", S[i]);
-        }
-        printf("\n\n");
+        // printf("S: ");
+        // for (i = 0; i < N; i++) {
+        //     printf("%d ", S[i]);
+        // }
+        // printf("\n\n");
 
 
         ////////////////////
@@ -205,11 +205,11 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);  // sync 2
     MPI_Scatter(S, subset_size_send, MPI_INT, Si, subset_size_recv, MPI_INT, 0, MPI_COMM_WORLD);
 
-    printf("Process %d subset: ", rank);
-    for (i = 0; i < subset_size_recv; i++) {
-    printf("%d ", Si[i]);
-    }
-    printf("\n");
+    // printf("Process %d subset: ", rank);
+    // for (i = 0; i < subset_size_recv; i++) {
+    // printf("%d ", Si[i]);
+    // }
+    // printf("\n");
 
     ///////////////////////////
     // Searching x in subset Si    
