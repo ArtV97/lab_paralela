@@ -4,7 +4,7 @@
 #include <time.h>
 #include <omp.h>
 
-void print_matrix ( int n_elements, int matrix[n_elements][n_elements]){
+void print_matrix (int n_elements, int matrix[n_elements][n_elements]){
   for (int i=0; i < n_elements; ++i){
     printf("[");
     for(int j=0; j< n_elements; j++){
@@ -99,6 +99,8 @@ int main(int argc, char **argv) {
     int row_b[n_elements];
     int row_c[n_elements];
 
+    int stop_at_row = (n_elements - 1) - (size - 1) + rank;
+
     while (1) {
       // Recv Row of Matrix A
       MPI_Recv(row_a, n_elements, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -117,7 +119,7 @@ int main(int argc, char **argv) {
       // Send row of Matrix C .TAG = row index
       MPI_Send(row_c, n_elements, MPI_INT, 0, status.MPI_TAG, MPI_COMM_WORLD);
       
-      if (n_elements - status.MPI_TAG <= rank) break;
+      if (status.MPI_TAG == stop_at_row) break;
     }
   }
 
