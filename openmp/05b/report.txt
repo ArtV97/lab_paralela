@@ -1,0 +1,10 @@
+Contabilizar os tempos de execução de sua versão openMP utilizando o comando interno omp_get_wtime()
+No relatório, gerar uma tabela com 4 linhas e 3 colunas  com os tempos de execução considerando o tamanho de vetor já executado
+3 colunas com 1, 2 e 4 threads / processos (se for MPI)
+4 linhas: tempo sequencial, tempo opemMP, tempo MPI com send/receive, tempo MPI com scatter
+
+implementação / threads ou processos    |       1       |       2       |       4       |
+sequencial                              |
+openMP                                  |
+MPI send/receive                        |
+MPI scatter                             |
