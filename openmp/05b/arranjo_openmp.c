@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
 
 	double final = omp_get_wtime();
     double result = final - initial;
-	printf("Calculation Execution Time: %lf\n", result);
+	printf("Calculation Execution Time: %lf\n\n", result);
 
 	return 0;
 }

@@ -6,37 +6,40 @@ No relatório, gerar uma tabela com 4 linhas e 3 colunas  com os tempos de execu
 fin1.txt: X = 17, N = 16 (X pertence a N)
 fin2.txt: X = 3, N = 1000 (X pertence a N)
 fin3.txt: X = 400000, N = 1000 (X não pertence a N)
-fin4.txt: X = -3, N = 10000000 (X não pertence a N)
+fin4.txt: X = 7700, N = 10000 (X não pertence a N)
 
 =========================================================================================
 Entrada fin1.txt
 
 implementação / threads ou processos    |       1       |       2       |       4       |
-sequencial                              |
-openMP                                  |
-MPI send/receive                        |
-MPI scatter                             |
+sequencial                              |   0.000006    |       -       |       -       |
+openMP                                  |   0.000008    |   0.000130    |   0.000183    |
+MPI send/receive                        |   0.000006    |   0.000153    |   0.000072    |
+MPI scatter                             |   0.000008    |   0.000099    |   0.000140    |
 =========================================================================================
 Entrada fin2.txt
 
 implementação / threads ou processos    |       1       |       2       |       4       |
-sequencial                              |
-openMP                                  |
-MPI send/receive                        |
-MPI scatter                             |
+sequencial                              |   0.000015    |       -       |       -       |
+openMP                                  |   0.000019    |   0.000167    |   0.000222    |
+MPI send/receive                        |   0.000016    |   0.002690    |   0.001241    |
+MPI scatter                             |   0.000017    |   0.002583    |   0.000952    |
 =========================================================================================
 Entrada fin3.txt
 
 implementação / threads ou processos    |       1       |       2       |       4       |
-sequencial                              |
-openMP                                  |
-MPI send/receive                        |
-MPI scatter                             |
+sequencial                              |   0.000011    |       -       |       -       |
+openMP                                  |   0.000013    |   0.000129    |   0.000166    |
+MPI send/receive                        |   0.000008    |   0.002881    |   0.000638    |
+MPI scatter                             |   0.000013    |   0.001317    |   0.000978    |
+=========================================================================================
+
 =========================================================================================
 Entrada fin4.txt
 
 implementação / threads ou processos    |       1       |       2       |       4       |
-sequencial                              |
-openMP                                  |
-MPI send/receive                        |
-MPI scatter                             |
+sequencial                              |   0.000048    |       -       |       -       |
+openMP                                  |   0.000042    |   0.000169    |   0.000257    |
+MPI send/receive                        |   0.000037    |   0.176914    |   0.061309    |
+MPI scatter                             |   0.000037    |   0.152311    |   0.060003    |
+=========================================================================================

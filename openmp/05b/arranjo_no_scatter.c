@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
         double final = MPI_Wtime();
         double result = final - initial;
         if (finished_counter == (size-1)) printf("%d not found in set S\n", x);
-        printf("Calculation Execution Time: %lf\n", result);
+        printf("Calculation Execution Time: %lf\n\n", result);
     }
     else {
         ////////////////////

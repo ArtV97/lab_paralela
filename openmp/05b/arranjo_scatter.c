@@ -199,7 +199,6 @@ int main(int argc, char **argv) {
         
         int finished_counter = 0;
         while (finished_counter != (size-1)) {
-            printf("Waiting finished counter\n");
             MPI_Recv(&found, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
             if (found) {
                 MPI_Bcast(&found, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -212,7 +211,7 @@ int main(int argc, char **argv) {
         double final = MPI_Wtime();
         double result = final - initial;
         if (finished_counter == (size-1)) printf("%d not found in set S\n", x);
-        printf("Calculation Execution Time: %lf\n", result);
+        printf("Calculation Execution Time: %lf\n\n", result);
     }
     else {
         ////////////////////
