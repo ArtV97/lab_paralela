@@ -3,6 +3,38 @@ No relatório, gerar uma tabela com 4 linhas e 3 colunas  com os tempos de execu
 3 colunas com 1, 2 e 4 threads / processos (se for MPI)
 4 linhas: tempo sequencial, tempo opemMP, tempo MPI com send/receive, tempo MPI com scatter
 
+fin1.txt: X = 17, N = 16 (X pertence a N)
+fin2.txt: X = 3, N = 1000 (X pertence a N)
+fin3.txt: X = 400000, N = 1000 (X não pertence a N)
+fin4.txt: X = -3, N = 10000000 (X não pertence a N)
+
+=========================================================================================
+Entrada fin1.txt
+
+implementação / threads ou processos    |       1       |       2       |       4       |
+sequencial                              |
+openMP                                  |
+MPI send/receive                        |
+MPI scatter                             |
+=========================================================================================
+Entrada fin2.txt
+
+implementação / threads ou processos    |       1       |       2       |       4       |
+sequencial                              |
+openMP                                  |
+MPI send/receive                        |
+MPI scatter                             |
+=========================================================================================
+Entrada fin3.txt
+
+implementação / threads ou processos    |       1       |       2       |       4       |
+sequencial                              |
+openMP                                  |
+MPI send/receive                        |
+MPI scatter                             |
+=========================================================================================
+Entrada fin4.txt
+
 implementação / threads ou processos    |       1       |       2       |       4       |
 sequencial                              |
 openMP                                  |

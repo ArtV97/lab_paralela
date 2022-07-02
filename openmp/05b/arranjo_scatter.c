@@ -9,7 +9,6 @@
 #define FOPEN_ERROR -3
 #define N_ERROR -2
 #define FILE_PARSE_ERROR -1
-#define SUCCESS 1
 
 
 void help() {
@@ -46,14 +45,15 @@ int main(int argc, char **argv) {
     int x;
     int subset_size_send;
     int subset_size_recv;
-    int *S = NULL;
+    //int *S = NULL;
+    int found = 0;
+    MPI_Request request;
+    int flag = 0;
 
     if (rank == 0) {
-        
         ////////////////////////////////////
         // Parse arguments
         ////////////////////////////////////
-
         x = 0;
         N = 0;
         char *filename = NULL;
@@ -111,11 +111,9 @@ int main(int argc, char **argv) {
         /////////////////////
         // Broadcast x and N
         /////////////////////
-        
         printf("### Preparing Search...\nx = %d, N = %d\n", x, N);
 
         int input[] = {x, N};
-        MPI_Barrier(MPI_COMM_WORLD);  // sync 1
         MPI_Bcast(input, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
 
@@ -123,8 +121,8 @@ int main(int argc, char **argv) {
         // Read or Generate S
         /////////////////////
 
-        //int S[N]; // set
-        S = (int*)malloc(N*sizeof(N));
+        int S[N]; // set
+        //S = (int*)malloc(N*sizeof(N));
         if (fin) { // read S from file
             printf("Reading S from %s\n", filename);
             i = 0;
@@ -171,55 +169,25 @@ int main(int argc, char **argv) {
         subset_size_recv = N/(size); // number of elements for each process
         subset_size_send = subset_size_recv;
 
-    }
-    else {
-        ////////////////////
-        // Receiving x and N
-        ////////////////////
 
-        int input[2];
+        //////////////////////////////
+        // Receiving/Sending subset Si
+        //////////////////////////////
+        double initial = MPI_Wtime();
 
-        MPI_Barrier(MPI_COMM_WORLD); // sync 1
-        MPI_Bcast(input, 2, MPI_INT, 0, MPI_COMM_WORLD);
-        
-        x = input[0];
-        N = input[1];
+        printf("### Running Scatter Search...\n");
+        int Si[subset_size_recv];
+        MPI_Scatter(S, subset_size_send, MPI_INT, Si, subset_size_recv, MPI_INT, 0, MPI_COMM_WORLD);
 
+        // printf("Process %d subset: ", rank);
+        // for (i = 0; i < subset_size_recv; i++) {
+        // printf("%d ", Si[i]);
+        // }
+        // printf("\n");
 
-
-        ////////////////////
-        // Declaring values
-        ////////////////////
-
-        subset_size_recv = N/(size); // number of elements for each process
-        subset_size_send = 0;
-    }
-
-    double initial = MPI_Wtime();
-
-    //////////////////////////////
-    // Receiving/Sending subset Si
-    //////////////////////////////
-
-    int Si[subset_size_recv];
-    MPI_Barrier(MPI_COMM_WORLD);  // sync 2
-    MPI_Scatter(S, subset_size_send, MPI_INT, Si, subset_size_recv, MPI_INT, 0, MPI_COMM_WORLD);
-
-    // printf("Process %d subset: ", rank);
-    // for (i = 0; i < subset_size_recv; i++) {
-    // printf("%d ", Si[i]);
-    // }
-    // printf("\n");
-
-    ///////////////////////////
-    // Searching x in subset Si    
-    ///////////////////////////
-
-    int found = 0;
-    MPI_Request request;
-    int flag = 0;
-    
-    if (rank == 0) {
+        ///////////////////////////
+        // Searching x in subset Si    
+        ///////////////////////////
         for (i = 0; i < subset_size_recv; i++) {
             if (Si[i] == x) { // process 0 found x
                 printf("%d found by process %d in position %d\n", x, rank, i);
@@ -229,10 +197,9 @@ int main(int argc, char **argv) {
             }
         }
         
-        free(S);
-
         int finished_counter = 0;
         while (finished_counter != (size-1)) {
+            printf("Waiting finished counter\n");
             MPI_Recv(&found, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
             if (found) {
                 MPI_Bcast(&found, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -248,6 +215,40 @@ int main(int argc, char **argv) {
         printf("Calculation Execution Time: %lf\n", result);
     }
     else {
+        ////////////////////
+        // Receiving x and N
+        ////////////////////
+        int input[2];
+        MPI_Bcast(input, 2, MPI_INT, 0, MPI_COMM_WORLD);
+        
+        x = input[0];
+        N = input[1];
+
+
+
+        ////////////////////
+        // Declaring values
+        ////////////////////
+        subset_size_recv = N/(size); // number of elements for each process
+        subset_size_send = 0;
+
+        
+        //////////////////////////////
+        // Receiving/Sending subset Si
+        //////////////////////////////
+        int Si[subset_size_recv];
+        int *S = NULL;
+        MPI_Scatter(S, subset_size_send, MPI_INT, Si, subset_size_recv, MPI_INT, 0, MPI_COMM_WORLD);
+
+        // printf("Process %d subset: ", rank);
+        // for (i = 0; i < subset_size_recv; i++) {
+        // printf("%d ", Si[i]);
+        // }
+        // printf("\n");
+
+        ///////////////////////////
+        // Searching x in subset Si    
+        ///////////////////////////
         for (i = 0; i < subset_size_recv; i++) {
             // non-blocking broadcast.
             // broadcast is received when another process found x
